@@ -1,5 +1,6 @@
-// require discord module
+//required modules
 const Discord = require('discord.js');
+const fetch = require('node-fetch');
 // load config values
 const { prefix, discord_token } = require('./config.json');
 // generate discord client
@@ -16,7 +17,7 @@ client.once('ready', () => {
 // login to discord bot
 client.login(discord_token);
 // when message recieved
-client.on('message', message => {
+client.on('message', async message => {
 	console.log(message.content);
 	// ignore bot messages
 	if (message.author.bot) return;
@@ -25,12 +26,13 @@ client.on('message', message => {
 	}
 	// proceeds if message starts with command prefix
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
-
+	// parse command
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const command = args.shift().toLowerCase();
+
 	if (command === 'ralph') {
 		// reply if !ralph was recieved
-		message.channel.send('Hi freind ');
+		message.channel.send('Hi freind, here are my current commands: \n!cat\n!server');
 	}
 	else if (command === 'server') {
 		message.channel.send(`Server name: ${message.guild.name}\nTotal members: ${message.guild.memberCount}`);
@@ -40,5 +42,9 @@ client.on('message', message => {
 			return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
 		}
 		message.channel.send(`Command name: ${command}\nArguments: ${args}`);
+	}
+	else if (command === 'cat') {
+		const { file } = await fetch('https://aws.random.cat/meow').then(response => response.json());
+		message.channel.send(file);
 	}
 });
