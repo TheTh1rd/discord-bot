@@ -2,12 +2,13 @@
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
 // load config values
-const { prefix, discord_token, whois_token } = require('./config.json');
+const { prefix, discord_token, whois_token, alpha_token } = require('./config.json');
 // generate discord client
 const client = new Discord.Client();
 
 // user names
 const dabears135 = '<@!209858147974643713>';
+const dabears135F = '<@209858147974643713>';
 
 // runs after client is ready
 // display bootup message
@@ -21,8 +22,8 @@ client.on('message', async message => {
 	console.log(message.content);
 	// ignore bot messages
 	if (message.author.bot) return;
-	if (message.content.includes(dabears135)) {
-		message.channel.send(`We have searched the NSA database and ${dabears135} is racist!`);
+	if (message.content.includes(dabears135) || message.content.includes(dabears135F)) {
+		message.channel.send(` Hey ${message.author}, are you sure you want to summon ${dabears135}? We have looked at their chat history and user ${dabears135} is racist!`);
 	}
 	// proceeds if message starts with command prefix
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
@@ -32,7 +33,7 @@ client.on('message', async message => {
 
 	if (command === 'ralph') {
 		// reply if !ralph was recieved
-		message.channel.send('Hi friend, here are my current commands: \n!cat\n!server\n!domain');
+		message.channel.send('Hi friend, here are my current commands: \n!cat\n!server\n!domain\n!stock');
 	}
 	else if (command === 'server') {
 		message.channel.send(`Server name: ${message.guild.name}\nTotal members: ${message.guild.memberCount}`);
@@ -60,5 +61,29 @@ client.on('message', async message => {
 		const domainName = json_response.DomainInfo.domainName;
 		const domainAvailability = json_response.DomainInfo.domainAvailability;
 		message.channel.send(`The domain ${domainName} is ${domainAvailability} to register.`);
+	}
+	else if(command === 'stock') {
+		if (!args.length) {
+			return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
+		}
+		// create domain availability url
+		const baseurlA = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE';
+		const urlA = baseurlA + '&symbol=' + args[0] + '&apikey=' + alpha_token;
+		console.log(urlA);
+		// fetch response
+		try{
+			const json_responseA = await fetch(urlA).then(response => response.json());
+			console.log(json_responseA);
+			const price = parseFloat(json_responseA['Global Quote']['05. price']).toFixed(2);
+			// price = price.toFixed(2);
+			const change = parseFloat(json_responseA['Global Quote']['10. change percent']).toFixed(2);
+			// change = change.toFixed(2);
+			message.channel.send(`The stock ${args[0]} current value is ${price}, a ${change} change today.`);
+		}
+		// catch error most commonly from invalid stock symbol
+		catch(error) {
+			console.log(error);
+			message.channel.send(`${args[0]} is not a valid stock symbol.`);
+		}
 	}
 });
