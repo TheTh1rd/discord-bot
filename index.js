@@ -25,6 +25,12 @@ client.on('message', async message => {
 	if (message.content.includes(dabears135) || message.content.includes(dabears135F)) {
 		message.channel.send(` Hey ${message.author}, are you sure you want to summon ${dabears135}? We have looked at their chat history and user ${dabears135} is racist!`);
 	}
+	// dad joke
+	const dad = message.content.match(/I'?’?‘?m\s+(\w+)/i);
+	if (dad) {
+		const son = message.content.split(/I'?’?‘?m\s+/i);
+		message.channel.send(`Hey, ${son[1]}! I'm Ralph!`);
+	}
 	// proceeds if message starts with command prefix
 	if (!message.content.startsWith(prefix) || message.author.bot) return;
 	// parse command
@@ -56,11 +62,16 @@ client.on('message', async message => {
 		const baseurl = 'https://domain-availability.whoisxmlapi.com/api/v1?';
 		const url = baseurl + 'apikey=' + whois_token + '&domainName=' + args[0];
 		console.log(url);
-		// fetch response
-		const json_response = await fetch(url).then(response => response.json());
-		const domainName = json_response.DomainInfo.domainName;
-		const domainAvailability = json_response.DomainInfo.domainAvailability;
-		message.channel.send(`The domain ${domainName} is ${domainAvailability} to register.`);
+		try{
+			// fetch response
+			const json_response = await fetch(url).then(response => response.json());
+			const domainName = json_response.DomainInfo.domainName;
+			const domainAvailability = json_response.DomainInfo.domainAvailability;
+			message.channel.send(`The domain ${domainName} is ${domainAvailability} to register.`);
+		}
+		catch (error) {
+			message.reply('Please submit a valid domain');
+		}
 	}
 	else if(command === 'stock') {
 		if (!args.length) {
@@ -78,12 +89,12 @@ client.on('message', async message => {
 			// price = price.toFixed(2);
 			const change = parseFloat(json_responseA['Global Quote']['10. change percent']).toFixed(2);
 			// change = change.toFixed(2);
-			message.channel.send(`The stock ${args[0]} current value is ${price}, a ${change} change today.`);
+			message.channel.send(`The stock ${args[0]} current value is ${price}, a ${change} percent change today.`);
 		}
 		// catch error most commonly from invalid stock symbol
 		catch(error) {
 			console.log(error);
-			message.channel.send(`${args[0]} is not a valid stock symbol.`);
+			message.reply(`${args[0]} is not a valid stock symbol.`);
 		}
 	}
 });
