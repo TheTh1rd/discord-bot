@@ -2,7 +2,7 @@
 const Discord = require('discord.js');
 const fetch = require('node-fetch');
 // load config values
-const { prefix, discord_token, whois_token, alpha_token } = require('./config.json');
+const { prefix, discord_token, whois_token, alpha_token, OPENWEATHER_TOKEN } = require('./config.json');
 // generate discord client
 const client = new Discord.Client();
 
@@ -39,7 +39,12 @@ client.on('message', async message => {
 
 	if (command === 'ralph') {
 		// reply if !ralph was recieved
-		message.channel.send('Hi friend, here are my current commands: \n!cat\n!server\n!domain\n!stock');
+		message.channel.send(`Hi friend, here are my current commands: 
+		!cat , gives a random cat picture.
+		!server , server details.
+		!domain <domain name> , checks domain availability.
+		!stock <stock Symbol> , provides stock price.
+		!weather <zip code> , returns weather forcast for given location.`);
 	}
 	else if (command === 'server') {
 		message.channel.send(`Server name: ${message.guild.name}\nTotal members: ${message.guild.memberCount}`);
@@ -95,6 +100,36 @@ client.on('message', async message => {
 		catch(error) {
 			console.log(error);
 			message.reply(`${args[0]} is not a valid stock symbol.`);
+		}
+	}
+	else if(command === 'weather') {
+		if (!args.length) {
+			return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
+		}
+		// create url
+		const baseurlA = 'https://api.openweathermap.org/data/2.5/weather?';
+		const urlA = `${baseurlA}zip=${args[0]},us&apikey=${OPENWEATHER_TOKEN}&units=imperial`;
+		console.log(urlA);
+		// fetch response
+		try{
+			const weatherResponse = await fetch(urlA).then(response => response.json());
+			console.log(weatherResponse);
+			const location = weatherResponse.name;
+			const currentTemp = weatherResponse.main.temp.toFixed(0);
+			const forecast = weatherResponse.weather[0].description;
+			const high = weatherResponse.main.temp_max.toFixed(0);
+			const low = weatherResponse.main.temp_min.toFixed(0);
+			message.channel.send(`Weather forecast for ${location}:
+			Current Temperature: ${currentTemp}°F
+			Weather Condition: ${forecast}
+			High: ${high}°F
+			Low: ${low}°F
+			`);
+		}
+		// catch error most commonly from invalid zip code
+		catch(error) {
+			console.log(error);
+			message.reply(`${args[0]} is not a valid zip code.`);
 		}
 	}
 });
