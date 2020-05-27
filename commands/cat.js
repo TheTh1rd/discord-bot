@@ -2,6 +2,7 @@ module.exports = {
 	name: 'cat',
 	description: 'its a cat',
 	aliases: ['kitty'],
+	guildOnly: true,
 	async execute(message, args) {
 		const fetch = require('node-fetch');
 		const { file } = await fetch('https://aws.random.cat/meow').then(response => response.json());

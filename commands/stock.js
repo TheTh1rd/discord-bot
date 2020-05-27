@@ -2,6 +2,7 @@ module.exports = {
 	name: 'stock',
 	description: 'checks stock price',
 	args: true,
+	guildOnly: true,
 	async execute(message, args) {
 		const fetch = require('node-fetch');
 		const { alpha_token } = require('../config.json');

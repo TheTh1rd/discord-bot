@@ -2,6 +2,7 @@ module.exports = {
 	name: 'domain',
 	description: 'checks domain availability',
 	args: true,
+	guildOnly: true,
 	async execute(message, args) {
 		const fetch = require('node-fetch');
 		const { whois_token } = require('../config.json');

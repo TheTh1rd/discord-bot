@@ -53,6 +53,11 @@ client.on('message', async message => {
 
 	if (!command) return;
 
+	// check if command is allowed in DMs
+	if (command.guildOnly && message.channel.type !== 'text') {
+		return message.reply('I can\'t execute that command inside DMs!');
+	}
+
 	if (command.args && !args.length) {
 		let reply = `You didn't provide any arguments, ${message.author}!`;
 		if (command.usage) {

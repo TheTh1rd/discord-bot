@@ -3,6 +3,7 @@ module.exports = {
 	description: 'provides weather forecast',
 	args: true,
 	usage: '<zipcode>',
+	guildOnly: true,
 	async execute(message, args) {
 		const fetch = require('node-fetch');
 		const { OPENWEATHER_TOKEN } = require('../config.json');
