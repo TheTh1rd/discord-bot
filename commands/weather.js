@@ -2,6 +2,7 @@ module.exports = {
 	name: 'weather',
 	description: 'provides weather forecast',
 	args: true,
+	usage: '<zipcode>',
 	async execute(message, args) {
 		const fetch = require('node-fetch');
 		const { OPENWEATHER_TOKEN } = require('../config.json');

@@ -47,12 +47,18 @@ client.on('message', async message => {
 	// parse command
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const commandName = args.shift().toLowerCase();
-	if (!client.commands.has(commandName)) return;
-	// create command object
-	const command = client.commands.get(commandName);
+	// create command object and check for aliiases
+	const command = client.commands.get(commandName)
+		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+	if (!command) return;
 
 	if (command.args && !args.length) {
-		return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
+		let reply = `You didn't provide any arguments, ${message.author}!`;
+		if (command.usage) {
+			reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
+		}
+		return message.channel.send(reply);
 	}
 
 	// cooldowns to prevent spam
