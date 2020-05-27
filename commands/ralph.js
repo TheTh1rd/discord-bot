@@ -2,7 +2,8 @@ module.exports = {
 	name: 'ralph',
 	description: 'shows ralphs commands',
 	guildOnly: true,
-	execute(message, args) {
+	args: false,
+	execute(message) {
 		message.author.send(`	Hey how you doin' lil' mama let me whisper in ya ear
 		Tell ya somethin' that ya might like to hear
 		Got a sexy ass body and ya ass look soft

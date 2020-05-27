@@ -1,7 +1,6 @@
 // required modules
 const fs = require('fs');
 const Discord = require('discord.js');
-const fetch = require('node-fetch');
 // load config values
 const { prefix, discord_token } = require('./config.json');
 // generate discord client
