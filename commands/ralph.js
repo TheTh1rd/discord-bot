@@ -4,7 +4,8 @@ module.exports = {
 	guildOnly: true,
 	args: false,
 	execute(message) {
-		message.author.send(`	Hey how you doin' lil' mama let me whisper in ya ear
+		message.author.send(`
+		Hey how you doin' lil' mama let me whisper in ya ear
 		Tell ya somethin' that ya might like to hear
 		Got a sexy ass body and ya ass look soft
 		Mind if I touch it to see if it's soft
