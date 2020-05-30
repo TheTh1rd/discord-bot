@@ -1,10 +1,17 @@
 // required modules
 const fs = require('fs');
 const Discord = require('discord.js');
+const { Op } = require('sequelize');
+
 // load config values
 const { prefix, discord_token } = require('./config.json');
 // generate discord client
 const client = new Discord.Client();
+// shop items
+const { Users, CurrencyShop } = require('./dbObjects');
+const currency = new Discord.Collection();
+
+// import commands
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -19,11 +26,35 @@ const cooldowns = new Discord.Collection();
 const dabears135 = '<@!209858147974643713>';
 const dabears135F = '<@209858147974643713>';
 
-// runs after client is ready
-// display bootup message
-client.once('ready', () => {
-	console.log('Ready!');
+// helper functions for currency collection
+Reflect.defineProperty(currency, 'add', {
+	value: async function add(id, amount) {
+		const user = currency.get(id);
+		if (user) {
+			user.balance += Number(amount);
+			return user.save();
+		}
+		const newUser = await Users.create({ user_id: id, balance: amount });
+		currency.set(id, newUser);
+		return newUser;
+	},
 });
+
+Reflect.defineProperty(currency, 'getBalance', {
+	value: function getBalance(id) {
+		const user = currency.get(id);
+		return user ? user.balance : 0;
+	},
+});
+
+// runs after client is ready
+client.once('ready', async () => {
+	// sync database
+	const storedBalances = await Users.findAll();
+	storedBalances.forEach(b => currency.set(b.user_id, b));
+	console.log(`Logged in as ${client.user.tag}!`);
+});
+
 // login to discord bot
 client.login(discord_token);
 // when message recieved
@@ -31,6 +62,10 @@ client.on('message', async message => {
 	console.log(message.content);
 	// ignore bot messages
 	if (message.author.bot) return;
+	// give user 1 monies per message
+	currency.add(message.author.id, 1);
+
+
 	// checks for racism
 	if (message.content.includes(dabears135) || message.content.includes(dabears135F)) {
 		message.channel.send(` Hey ${message.author}, are you sure you want to summon ${dabears135}? We have looked at their chat history and user ${dabears135} is racist!`);
@@ -70,11 +105,10 @@ client.on('message', async message => {
 	if (!cooldowns.has(command.name)) {
 		cooldowns.set(command.name, new Discord.Collection());
 	}
-
+	// prevents spamming commands
 	const now = Date.now();
 	const timestamps = cooldowns.get(command.name);
 	const cooldownAmount = (command.cooldown || 3) * 1000;
-
 	if (timestamps.has(message.author.id)) {
 		if (timestamps.has(message.author.id)) {
 			const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
@@ -88,9 +122,9 @@ client.on('message', async message => {
 		timestamps.set(message.author.id, now);
 		setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 	}
-
+	// run command
 	try {
-		command.execute(message, args);
+		command.execute(message, args, currency);
 	}
 	catch (error) {
 		console.error(error);
