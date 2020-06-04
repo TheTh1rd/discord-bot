@@ -6,7 +6,7 @@ module.exports = {
 	ussage: '<stock symbol>',
 	args: true,
 	guildOnly: true,
-	async execute(message, args) {
+	execute: async (message, args) =>{
 		// create domain availability url
 		const baseurlA = 'https://www.alphavantage.co/query?function=GLOBAL_QUOTE';
 		const urlA = baseurlA + '&symbol=' + args[0] + '&apikey=' + alpha_token;

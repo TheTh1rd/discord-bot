@@ -34,4 +34,25 @@ Users.prototype.getItems = function() {
 	});
 };
 
+Users.prototype.useItem = async function(item) {
+	const userItem = await UserItems.findOne({
+		where: { user_id: this.user_id, item_id: item.id },
+	});
+
+	if(userItem) {
+		console.log(userItem.amount);
+		if (userItem.amount > 0) {
+			console.log('has item');
+			userItem.amount -= 1;
+			userItem.save();
+			return true;
+		}
+	}
+	else{
+		console.log('its false');
+		return false;
+	}
+};
+
+
 module.exports = { Users, CurrencyShop, UserItems };

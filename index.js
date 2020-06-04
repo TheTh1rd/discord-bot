@@ -81,9 +81,69 @@ client.on('message', async message => {
 	// parse command
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const commandName = args.shift().toLowerCase();
+	console.log(commandName);
 	// create command object and check for aliiases
 	const command = client.commands.get(commandName)
 		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+
+
+	// for eddie to convert
+	if (commandName === 'balance') {
+		console.log('we in this bish');
+		const target = message.mentions.users.first() || message.author;
+		return message.channel.send(`${target.tag} has ${currency.getBalance(target.id)}💰`);
+	}
+	else if (commandName === 'inventory') {
+		const target = message.mentions.users.first() || message.author;
+		const user = await Users.findOne({ where: { user_id: target.id } });
+		const items = await user.getItems();
+
+		if (!items.length) return message.channel.send(`${target.tag} has nothing!`);
+		return message.channel.send(`${target.tag} currently has ${items.map(i => `${i.amount} ${i.item.name}`).join(', ')}`);
+	}
+	else if (commandName === 'transfer') {
+		const currentAmount = currency.getBalance(message.author.id);
+		const transferAmount = args.find(arg => !/<@!?\d+>/g.test(arg));
+		const transferTarget = message.mentions.users.first();
+
+		if (!transferAmount || isNaN(transferAmount)) return message.channel.send(`Sorry ${message.author}, that's an invalid amount.`);
+		if (transferAmount > currentAmount) return message.channel.send(`Sorry ${message.author}, you only have ${currentAmount}.`);
+		if (transferAmount <= 0) return message.channel.send(`Please enter an amount greater than zero, ${message.author}.`);
+
+		currency.add(message.author.id, -transferAmount);
+		currency.add(transferTarget.id, transferAmount);
+
+		return message.channel.send(`Successfully transferred ${transferAmount}💰 to ${transferTarget.tag}. Your current balance is ${currency.getBalance(message.author.id)}💰`);
+	}
+	else if (commandName === 'buy') {
+		console.log(args);
+		const item = await CurrencyShop.findOne({ where: { name: { [Op.like]: args[0] } } });
+		if (!item) return message.channel.send('That item doesn\'t exist. Please use !buy <item Name>');
+		if (item.cost > currency.getBalance(message.author.id)) {
+			return message.channel.send(`You currently have ${currency.getBalance(message.author.id)}, but the ${item.name} costs ${item.cost}!`);
+		}
+
+		const user = await Users.findOne({ where: { user_id: message.author.id } });
+		currency.add(message.author.id, -item.cost);
+		await user.addItem(item);
+
+		message.channel.send(`You've bought: ${item.name}.`);
+	}
+	else if (commandName === 'shop') {
+		const items = await CurrencyShop.findAll();
+		return message.channel.send(items.map(item => `${item.name}: ${item.cost}💰`).join('\n'), { code: true });
+	}
+	else if (commandName === 'leaderboard') {
+		return message.channel.send(
+			currency.sort((a, b) => b.balance - a.balance)
+				.filter(user => client.users.has(user.user_id))
+				.first(10)
+				.map((user, position) => `(${position + 1}) ${(client.users.get(user.user_id).tag)}: ${user.balance}💰`)
+				.join('\n'),
+			{ code: true },
+		);
+	}
+
 
 	if (!command) return;
 
@@ -122,8 +182,21 @@ client.on('message', async message => {
 		timestamps.set(message.author.id, now);
 		setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
 	}
+
+
 	// run command
 	try {
+		if(command.name == 'smoke') {
+			const target = message.mentions.users.first() || message.author;
+			const user = await Users.findOne({ where: { user_id: target.id } });
+			const item = await CurrencyShop.findOne({ where: { name: 'Weed' } });
+			console.log('lighting');
+			const doIt = await user.useItem(item);
+			if(!doIt) {
+				console.log('no item');
+				return message.reply('You dont have any weed to smoke');
+			}
+		}
 		command.execute(message, args, currency);
 	}
 	catch (error) {

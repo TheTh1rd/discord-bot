@@ -3,7 +3,7 @@ module.exports = {
 	description: 'Ping!',
 	guildOnly: true,
 	args: false,
-	execute(message) {
+	execute : (message) => {
 		message.channel.send('What did you expect?');
 	},
 };
