@@ -8,7 +8,7 @@ const { prefix, discord_token } = require('./config.json');
 // generate discord client
 const client = new Discord.Client();
 // shop items
-const { Users, CurrencyShop } = require('./dbObjects');
+const { Users } = require('./dbObjects');
 const currency = new Discord.Collection();
 module.exports = { currency, Op, client };
 

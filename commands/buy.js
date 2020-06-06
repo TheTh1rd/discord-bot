@@ -3,7 +3,7 @@ const { currency, Op } = require('../index.js');
 module.exports = {
 	name: 'buy',
 	description: 'buys 1 of specified item',
-	ussage: '<item name>',
+	usage: '<item name>',
 	guildOnly: true,
 	args: true,
 	async execute(message, args) {

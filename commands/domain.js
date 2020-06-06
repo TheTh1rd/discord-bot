@@ -3,7 +3,7 @@ const { whois_token } = require('../config.json');
 module.exports = {
 	name: 'domain',
 	description: 'checks domain availability',
-	ussage: '<domain name>',
+	usage: '<domain name>',
 	args: true,
 	guildOnly: true,
 	async execute(message, args) {
