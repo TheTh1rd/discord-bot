@@ -8,6 +8,12 @@ From the root of the project install the node modules:
 npm install
 ```
 
+Initialize DataBase:
+
+```bash
+node dbInit.js
+```
+
 To run the bot:
 
 ```bash
