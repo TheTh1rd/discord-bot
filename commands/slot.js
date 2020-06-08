@@ -1,4 +1,3 @@
-const { Users } = require('../dbObjects');
 const { currency } = require('../index.js');
 function getRandomInt(max) {
 	return Math.floor(Math.random() * Math.floor(max));
@@ -12,9 +11,7 @@ module.exports = {
 	args: true,
 	async execute(message, args) {
 		console.log('diglet');
-		const user = await Users.findOne({ where: { user_id: message.author.id } });
 		const balance = await currency.getBalance(message.author.id);
-		console.log(`balance ${balance}`);
 		const reg = new RegExp('^\\d+$');
 		if(!reg.test(args[0])) {
 			return message.reply('Please enter a valid amount!\nPlease use !help to get a list of commands.');
@@ -22,14 +19,10 @@ module.exports = {
 		if(args[0] > balance) {
 			return message.reply('You do not have enough money to bet that much!');
 		}
-		console.log(args[0]);
-		console.log(balance);
 		const icons = ['🎲', '💸', '💰'];
 		const slot1 = getRandomInt(3);
 		const slot2 = getRandomInt(3);
 		const slot3 = getRandomInt(3);
-		// const slots = [icons[slot1], icons[slot2], icons[slot3]];
-
 		const response = [];
 		response.push(`entered ${args[0]} ralph bucks!`);
 		response.push('-----------------');
