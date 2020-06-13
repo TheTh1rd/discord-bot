@@ -27,12 +27,12 @@ module.exports = {
 		response.push(`entered ${args[0]} ralph bucks!`);
 		response.push('-----------------');
 		response.push(`<|${icons[(slot1 + 2) % 3]}|${icons[(slot2 + 1) % 3]}|${icons[(slot3 + 2) % 3]}|>`);
-		response.push(`>|${icons[slot1]}|${icons[slot2]}|${icons[slot1]}|<`);
+		response.push(`>|${icons[slot1]}|${icons[slot2]}|${icons[slot3]}|<`);
 		response.push(`<|${icons[(slot1 + 1) % 3]}|${icons[(slot2 + 2) % 3]}|${icons[(slot3 + 1) % 3]}|>`);
 		response.push('-----------------');
 		if(slot1 == slot2 && slot1 == slot3) {
-			currency.add(message.author.id, args[0] * (slot1 + 1) * 5);
-			response.push(`Congrats you won ${args[0] * (slot1 + 1) * 5} ralph bucks!💰💰💰`);
+			currency.add(message.author.id, args[0] * (slot1 + 1) * 4);
+			response.push(`Congrats you won ${args[0] * (slot1 + 1) * 4} ralph bucks!💰💰💰`);
 			return message.reply(response.join('\n'));
 		}
 		else{
