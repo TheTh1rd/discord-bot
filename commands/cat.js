@@ -6,7 +6,13 @@ module.exports = {
 	guildOnly: true,
 	args: false,
 	async execute(message) {
-		const { file } = await fetch('https://aws.random.cat/meow').then(response => response.json());
-		message.channel.send(file);
+		try{
+			const { file } = await fetch('https://aws.random.cat/meow').then(response => response.json());
+			message.channel.send(file);
+		}
+		catch (error) {
+			message.reply('Cat api is down 😭');
+		}
+
 	},
 };

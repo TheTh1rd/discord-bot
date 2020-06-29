@@ -7,13 +7,20 @@ module.exports = {
 	name: 'poker',
 	description: 'poker game',
 	usage: '<amount to bet>',
-	aliases: ['cards', '5card'],
+	aliases: ['cards', '5card', 'card'],
 	guildOnly: true,
 	args: true,
 	async execute(message, args) {
 		console.log('totodile');
 		const pokerEmbed = new Discord.MessageEmbed().setColor('#0099ff').setTitle('5 Card Draw');
-
+		const balance = await currency.getBalance(message.author.id);
+		const reg = new RegExp('^\\d+$');
+		if(!reg.test(args[0])) {
+			return message.reply('Please enter a valid amount!\nPlease use !help to get a list of commands.');
+		}
+		if(args[0] > balance) {
+			return message.reply('You do not have enough money to bet that much!');
+		}
 
 		const arr = [];
 		while(arr.length < 5) {
@@ -29,19 +36,31 @@ module.exports = {
 		const straight = [];
 		const hand = [];
 		let card;
+		let cardStats = new Array(3).fill(0);
+		let cardMap = [];
+
+		// card stats values
+		// 0:s suits
+		// 1:v card Number
+		// 2:newCard  card
 		for(card in arr) {
 			const s = Math.ceil(arr[card] / 13) - 1;
+			cardStats[0] = s;
 			console.log(`suit ${s}`);
 			const v = arr[card] % 13;
+			cardStats[1] = v;
 			console.log(`card ${v}`);
 			const newCard = `${cardValue[v]}${suits[s]}`;
+			cardStats[2] = newCard;
 			cards.push(newCard);
 			console.log(cards);
 			hand.push(newCard);
 			count[v]++;
 			flush[s]++;
 			straight.push(v);
+			cardMap.push(cardStats);
 		}
+
 		function hasStraight(cardValues) {
 			cardValues.sort((a, b) => a - b);
 			for(let i = 0; i < (cardValues.length - 1); i++) {
@@ -50,11 +69,6 @@ module.exports = {
 			return true;
 		}
 
-		// let i;
-		// for(i = 0; i < 5; i++) {
-		// 	hand[i] = cards.pop();
-		// 	count[hand[i]]++;
-		// }
 		console.log(hand);
 		console.log(count);
 
@@ -63,19 +77,24 @@ module.exports = {
 			.setFooter('Sponsored by big ralph industries');
 
 		if(flush.indexOf(5) != -1 && hasStraight(straight)) {
-			pokerEmbed.addFields({ name: 'Dealer:', value: 'Congrats! You have a straight flush' });
+			currency.add(message.author.id, args[0] * 5);
+			pokerEmbed.addFields({ name: 'Congrats! You have a straight flush', value: `You won ${args[0] * 6} ralph bucks!💰💰💰` });
 		}
 		else if(flush.indexOf(5) != -1) {
-			pokerEmbed.addFields({ name: 'Dealer:', value: 'Congrats! You have a flush' });
+			currency.add(message.author.id, args[0] * 3);
+			pokerEmbed.addFields({ name: 'Congrats! You have a flush', value: `You won ${args[0] * 4} ralph bucks!💰💰💰` });
 		}
 		else if(hasStraight(straight)) {
-			pokerEmbed.addFields({ name: 'Dealer:', value: 'Congrats! You have a straight' });
+			currency.add(message.author.id, args[0] * 3);
+			pokerEmbed.addFields({ name: 'Congrats! You have a straight', value: `You won ${args[0] * 4} ralph bucks!💰💰💰` });
 		}
 		else if(count.indexOf(5) != -1) {
-			pokerEmbed.addFields({ name: 'Dealer:', value: 'Congrats! You have a five of a kind' });
+			currency.add(message.author.id, args[0] * 3);
+			pokerEmbed.addFields({ name: 'Congrats! You have a five of a kind', value: `You won ${args[0] * 4} ralph bucks!💰💰💰` });
 		}
 		else if(count.indexOf(4) != -1) {
-			pokerEmbed.addFields({ name: 'Dealer:', value: 'Congrats! You have a four of a kind' });
+			currency.add(message.author.id, args[0] * 3);
+			pokerEmbed.addFields({ name: 'Congrats! You have a four of a kind', value: `You won ${args[0] * 4} ralph bucks!💰💰💰` });
 		}
 		else if(count.indexOf(3) != -1) {
 			currency.add(message.author.id, args[0] * 2);
@@ -93,15 +112,8 @@ module.exports = {
 			}
 		}
 		else{
+			currency.add(message.author.id, -args[0]);
 			pokerEmbed.addFields({ name: 'Dealer:', value: 'HA! you dont have shit!' });
-		}
-		const balance = await currency.getBalance(message.author.id);
-		const reg = new RegExp('^\\d+$');
-		if(!reg.test(args[0])) {
-			return message.reply('Please enter a valid amount!\nPlease use !help to get a list of commands.');
-		}
-		if(args[0] > balance) {
-			return message.reply('You do not have enough money to bet that much!');
 		}
 
 		message.channel.send(pokerEmbed);
