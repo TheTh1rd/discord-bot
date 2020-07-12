@@ -10,7 +10,6 @@ module.exports = {
 		console.log('lighting');
 		const doIt = await user.useItem(item);
 		if(!doIt) {
-			console.log('no item');
 			return message.reply('You dont have any weed to smoke');
 		}
 		message.channel.send('*cough* *cough* thats some good stuff\n https://imgur.com/gallery/nY1SVr7');

@@ -22,12 +22,6 @@ module.exports = {
 		So you can see what you been missin'
 		You might had some, but you never had none like this
 		Just wait til' you see my dick (Oooooooo!!!)`);
-		message.channel.send(`Hi friend, here are my current commands:
-		!help. 
-		!cat , gives a random cat picture.
-		!server , server details.
-		!domain <domain name> , checks domain availability.
-		!stock <stock Symbol> , provides stock price.
-		!weather <zip code> , returns weather forcast for given location.`);
+		message.channel.send('Hi friend, use !help to learn more about my commands.');
 	},
 };

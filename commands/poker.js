@@ -1,8 +1,6 @@
 const Discord = require('discord.js');
 const { currency } = require('../index.js');
-function getRandomInt(max) {
-	return Math.floor(Math.random() * Math.floor(max));
-}
+
 module.exports = {
 	name: 'poker',
 	description: 'poker game',
@@ -27,7 +25,6 @@ module.exports = {
 			const r = Math.floor(Math.random() * 52) + 1;
 			if(arr.indexOf(r) === -1) arr.push(r);
 		}
-		console.log(arr);
 		const cards = [];
 		const cardValue = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
 		const suits = ['♠️', '♥️', '♣️', '♦️'];
@@ -36,8 +33,8 @@ module.exports = {
 		const straight = [];
 		const hand = [];
 		let card;
-		let cardStats = new Array(3).fill(0);
-		let cardMap = [];
+		const cardStats = new Array(3).fill(0);
+		const cardMap = [];
 
 		// card stats values
 		// 0:s suits
@@ -46,14 +43,11 @@ module.exports = {
 		for(card in arr) {
 			const s = Math.ceil(arr[card] / 13) - 1;
 			cardStats[0] = s;
-			console.log(`suit ${s}`);
 			const v = arr[card] % 13;
 			cardStats[1] = v;
-			console.log(`card ${v}`);
 			const newCard = `${cardValue[v]}${suits[s]}`;
 			cardStats[2] = newCard;
 			cards.push(newCard);
-			console.log(cards);
 			hand.push(newCard);
 			count[v]++;
 			flush[s]++;
@@ -68,9 +62,6 @@ module.exports = {
 			}
 			return true;
 		}
-
-		console.log(hand);
-		console.log(count);
 
 		pokerEmbed.addFields(
 			{ name: 'Cards', value: `| ${hand[0]} | ${hand[1]} | ${hand[2]} | ${hand[3]} | ${hand[4]} | ` })

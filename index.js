@@ -62,7 +62,6 @@ client.once('ready', async () => {
 
 // when message recieved
 client.on('message', async message => {
-	console.log(message.content);
 	// ignore bot messages
 	if (message.author.bot) return;
 	// give user 1 monies per message
@@ -84,7 +83,6 @@ client.on('message', async message => {
 	// parse command
 	const args = message.content.slice(prefix.length).split(/ +/);
 	const commandName = args.shift().toLowerCase();
-	console.log(commandName);
 	// create command object and check for aliiases
 	const command = client.commands.get(commandName)
 		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
